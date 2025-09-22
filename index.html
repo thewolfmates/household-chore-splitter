@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wolfmates - Household Chore Splitter</title>
+    <meta name="description" content="Create a fair, rotating chore plan in minutes. Split household tasks evenly, respect availability, and keep everyone happy.">
+    <meta property="og:title" content="Wolfmates - Household Chore Splitter">
+    <meta property="og:description" content="Create fair, rotating chore plans for your household in minutes">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234CAF50' d='M12 2C8.13 2 5 5.13 5 9c0 1.74.5 3.37 1.41 4.84L12 22l5.59-8.16C18.5 12.37 19 10.74 19 9c0-3.87-3.13-7-7-7z'/%3E%3Ccircle fill='%23fff' cx='12' cy='9' r='2.5'/%3E%3C/svg%3E">
+    
+    <style>
+        :root {
+            /* Light theme */
+            --primary: #4CAF50;
+            --primary-dark: #45a049;
+            --secondary: #2196F3;
+            --surface: #ffffff;
+            --background: #f5f5f5;
+            --on-surface: #333333;
+            --on-primary: #ffffff;
+            --border: #e0e0e0;
+            --error: #f44336;
+            --warning: #ff9800;
+            --success: #4caf50;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .dark {
+            --primary: #66bb6a;
+            --primary-dark: #5da85f;
+            --secondary: #64b5f6;
+            --surface: #2b2b2b;
+            --background: #1a1a1a;
+            --on-surface: #e0e0e0;
+            --on-primary: #000000;
+            --border: #404040;
+            --error: #ef5350;
+            --warning: #ffb74d;
+            --success: #66bb6a;
+            --shadow: 0 2px 4px rgba(0,0,0,0.3);
+            --shadow-lg: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            background: var(--background);
+            color: var(--on-surface);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: var(--on-primary);
+            border-color: var(--primary);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            background: var(--surface);
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--on-surface);
+            opacity: 0.8;
+        }
+
+        .hero-link {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .hero-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: var(--on-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--primary);
+            color: var(--on-primary);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-danger {
+            background: var(--error);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #d32f2f;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--background);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--on-surface);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface);
+            color: var(--on-surface);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        /* Dynamic rows */
+        .dynamic-rows {
+            margin-bottom: 1rem;
+        }
+
+        .row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .add-row {
+            background: var(--secondary);
+        }
+
+        .remove-row {
+            background: var(--error);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .faq-question {
+            padding: 1rem;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--on-surface);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            padding: 0 1rem 1rem;
+            display: none;
+            color: var(--on-surface);
+            opacity: 0.8;
+        }
+
+        .faq-item.expanded .faq-answer {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .footer-links {
+            margin-bottom: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="https://scontent.fagc1-2.fna.fbcdn.net/v/t39.30808-6/550441414_122133117560909014_4872303423796222590_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=127cfc&_nc_ohc=J9E7N5yocrkQ7kNvgHdgVml&_nc_oc=Adn_L3VTGrVu1ZCdTEohd7yvzOkFiM-9BkkgX_-ByX3D8xDY8xsZM2Zy9Akt2VdoaqZgnIoijhlqwNKylBdQfXW5&_nc_zt=23&_nc_ht=scontent.fagc1-2.fna&_nc_gid=tqZALk2xhxM-_6JUaEC7lA&oh=00_AfYSDoE3BmiDGedkQZfeljlE2rRbJrFFChqHHx4w6lbbug&oe=68D6F66C" 
+                     alt="Wolfmates Logo" class="logo">
+                <h1 class="title">Wolfmates - Household Chore Splitter</h1>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Create a fair, rotating chore plan in minutes—customized to your household's real life</h1>
+            <p>Split tasks evenly, respect availability, and keep everyone happy</p>
+            <a href="#how-it-works" class="hero-link">How it Works</a>
+        </div>
+    </section>
+
+    <main class="container">
+        <!-- Chore Builder Section -->
+        <section class="card">
+            <h2>Household Members</h2>
+            <div class="dynamic-rows" id="members-section">
+                <div class="row-header">
+                    <span>Enter names for fair assignment</span>
+                    <button class="btn add-row" onclick="addMemberRow()">Add Person</button>
+                </div>
+                <div id="members-rows">
+                    <!-- Dynamic member rows -->
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Chores</h2>
+            <div class="dynamic-rows" id="chores-section">
+                <div class="row-header">
+                    <span>Add household tasks to split fairly</span>
+                    <div>
+                        <button class="btn btn-secondary btn-small" onclick="loadSampleData()">Load Sample Data</button>
+                        <button class="btn add-row" onclick="addChoreRow()">Add Chore</button>
+                    </div>
+                </div>
+                <div id="chores-rows">
+                    <!-- Dynamic chore rows -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Generate Button -->
+        <div style="text-align: center; margin: 2rem 0;">
+            <button class="btn" id="generate-btn" onclick="generatePlan()" style="font-size: 1.25rem; padding: 1rem 2rem;">
+                Generate Plan
+            </button>
+        </div>
+
+        <!-- How It Works Section -->
+        <section class="card" id="how-it-works">
+            <h2>How It Works</h2>
+            <div style="display: grid; gap: 2rem; margin-top: 1rem;">
+                <div>
+                    <h3>1. Add Members and Chores</h3>
+                    <p>Enter household members with their availability and preferences. Add chores with effort levels and frequency. Example: Alex does dishes on Monday, effort level 2.</p>
+                </div>
+                <div>
+                    <h3>2. Configure Settings</h3>
+                    <p>Choose between fair round-robin (takes turns) or weighted balance (considers capacity). Set your preferred start date and conflict handling.</p>
+                </div>
+                <div>
+                    <h3>3. Generate and Adjust</h3>
+                    <p>Click generate to create your plan. Review assignments and click any task to reassign it to a different eligible person. Export or share when you're happy with the plan.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="card">
+            <h2>Frequently Asked Questions</h2>
+            <div id="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        How is "fair" calculated?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Fair Round-Robin rotates assignments among eligible members, remembering who did what last. Weighted Balance considers each person's capacity and current workload, assigning tasks to those with the lightest load first.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What if someone is unavailable?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Tasks are only assigned to available members. If no one is available for a task on a specific day, it's marked as uncovered with an explanation.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Can I modify assignments after generation?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! Click on any assignment to see eligible alternatives. The plan will automatically rebalance totals when you make changes.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        How does capacity work?
+                        <span>+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Capacity limits how many tasks someone can be assigned per week. Set to "Auto" for unlimited, or specify a number. Useful for balancing workload between adults and children.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://wolfmates.com" target="_blank">Made by Wolfmates</a>
+            </div>
+            <div class="footer-text">
+                <p>This tool provides general household coordination guidance. Assignments are suggestions and may not reflect your household's preferences, abilities, or safety considerations. Please review and adjust as needed.</p>
+                <p style="margin-top: 1rem;">v1.0 | © Wolfmates. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+    <script>
+        // Global state
+        var state = {
+            members: [],
+            chores: [],
+            settings: {
+                startDate: new Date().toISOString().split('T')[0],
+                assignmentMode: 'round-robin',
+                conflictPolicy: 'reassign',
+                rotationMemory: true
+            },
+            plan: null,
+            rotationHistory: {}
+        };
+
+        // Days of week
+        var DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        var DAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+        // Member management functions
+        function addMemberRow() {
+            console.log('Adding member row...');
+            var member = {
+                id: Date.now(),
+                name: '',
+                role: '',
+                availability: [true, true, true, true, true, true, true],
+                capacity: -1,
+                cantDo: [],
+                weight: 1.0
+            };
+            
+            state.members.push(member);
+            renderMembers();
+            updateGenerateButton();
+            saveStateToStorage();
+        }
+
+        function removeMemberRow(id) {
+            state.members = state.members.filter(function(m) { return m.id !== id; });
+            renderMembers();
+            updateGenerateButton();
+            saveStateToStorage();
+        }
+
+        function renderMembers() {
+            var container = document.getElementById('members-rows');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            state.members.forEach(function(member, index) {
+                var row = document.createElement('div');
+                row.className = 'form-row';
+                row.innerHTML = 
+                    '<div class="form-group">' +
+                        '<label for="member-name-' + member.id + '">Name *</label>' +
+                        '<input type="text" id="member-name-' + member.id + '" value="' + member.name + '" ' +
+                               'placeholder="Enter name" required ' +
+                               'oninput="updateMember(' + member.id + ', \'name\', this.value)">' +
+                    '</div>' +
+                    
+                    '<div class="form-group">' +
+                        '<label for="member-role-' + member.id + '">Role</label>' +
+                        '<input type="text" id="member-role-' + member.id + '" value="' + member.role + '" ' +
+                               'placeholder="e.g. Parent, Child" ' +
+                               'oninput="updateMember(' + member.id + ', \'role\', this.value)">' +
+                    '</div>' +
+                    
+                    '<div class="form-group">' +
+                        '<label>Availability</label>' +
+                        '<div class="checkbox-group">' +
+                            DAYS_SHORT.map(function(day, i) {
+                                return '<div class="checkbox-item">' +
+                                    '<input type="checkbox" id="member-avail-' + member.id + '-' + i + '" ' +
+                                           (member.availability[i] ? 'checked' : '') + ' ' +
+                                           'onchange="updateMemberAvailability(' + member.id + ', ' + i + ', this.checked)">' +
+                                    '<label for="member-avail-' + member.id + '-' + i + '">' + day + '</label>' +
+                                '</div>';
+                            }).join('') +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<div class="form-group">' +
+                        '<label for="member-capacity-' + member.id + '">Tasks/Week</label>' +
+                        '<select id="member-capacity-' + member.id + '" ' +
+                                'onchange="updateMember(' + member.id + ', \'capacity\', parseInt(this.value))">' +
+                            '<option value="-1"' + (member.capacity === -1 ? ' selected' : '') + '>Auto</option>' +
+                            [1,2,3,4,5,6,7,8,9,10].map(function(n) {
+                                return '<option value="' + n + '"' + (member.capacity === n ? ' selected' : '') + '>' + n + '</option>';
+                            }).join('') +
+                        '</select>' +
+                    '</div>' +
+                    
+                    '<div class="form-group">' +
+                        '<button class="btn btn-danger btn-small remove-row" onclick="removeMemberRow(' + member.id + ')">' +
+                            'Remove' +
+                        '</button>' +
+                    '</div>';
+                container.appendChild(row);
+            });
+        }
+
+        function updateMember(id, field, value) {
+            var member = state.members.find(function(m) { return m.id === id; });
+            if (member) {
+                member[field] = value;
+                updateGenerateButton();
+                saveStateToStorage();
+            }
+        }
+
+        function updateMemberAvailability(id, dayIndex, checked) {
+            var member = state.members.find(function(m) { return m.id === id; });
+            if (member) {
+                member.availability[dayIndex] = checked;
+                saveStateToStorage();
+            }
+        }
+
+        // Chore management functions
+        function addChoreRow() {
+            console.log('Adding chore row...');
+            var chore = {
+                id: Date.now(),
+                name: '',
+                frequency: 'weekly',
+                effortPoints: 2,
+                preferredDays: [],
+                minAgeRole: '',
+                critical: false
+            };
+            
+            state.chores.push(chore);
+            renderChores();
+            updateGenerateButton();
+            saveStateToStorage();
+        }
+
+        function removeChoreRow(id) {
+            state.chores = state.chores.filter(function(c) { return c.id !== id; });
+            renderChores();
+            updateGenerateButton();
+            saveStateToStorage();
+        }
+
+        function renderChores() {
+            var container = document.getElementById('chores-rows');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            state.chores.forEach(function(chore) {
+                var row = document.createElement('div');
+                row.className = 'form-row';
+                row.innerHTML = 
+                    '<div class="form-group">' +
+                        '<label for="chore-name-' + chore.id + '">Chore *</label>' +
+                        '<input type="text" id="chore-name-' + chore.id + '" value="' + chore.name + '" ' +
+                               'placeholder="e.g. Wash dishes" required ' +
+                               'oninput="updateChore(' + chore.id + ', \'name\', this.value)">' +
+                    '</div>' +
+                    
+                    '<div class="form-group">' +
+                        '<label for="chore-frequency-' + chore.id + '">Frequency</label>' +
+                        '<select id="chore-frequency-' + chore.id + '" ' +
+                                'onchange="updateChore(' + chore.id + ', \'frequency\', this.value)">' +
+                            '<option value="daily"' + (chore.frequency === 'daily' ? ' selected' : '') + '>Daily</option>' +
+                            '<option value="weekly"' + (chore.frequency === 'weekly' ? ' selected' : '') + '>Weekly</option>' +
+                            '<option value="monthly"' + (chore.frequency === 'monthly' ? ' selected' : '') + '>Monthly</option>' +
+                        '</select>' +
+                    '</div>' +
+                    
+                    '<div class="form-group">' +
+                        '<button class="btn btn-danger btn-small remove-row" onclick="removeChoreRow(' + chore.id + ')">' +
+                            'Remove' +
+                        '</button>' +
+                    '</div>';
+                container.appendChild(row);
+            });
+        }
+
+        function updateChore(id, field, value) {
+            var chore = state.chores.find(function(c) { return c.id === id; });
+            if (chore) {
+                chore[field] = value;
+                updateGenerateButton();
+                saveStateToStorage();
+            }
+        }
+
+        function updateGenerateButton() {
+            var btn = document.getElementById('generate-btn');
+            if (!btn) return;
+            
+            var hasMembers = state.members.some(function(m) { return m.name.trim(); });
+            var hasChores = state.chores.some(function(c) { return c.name.trim(); });
+            
+            btn.disabled = !hasMembers || !hasChores;
+            
+            if (!hasMembers && !hasChores) {
+                btn.textContent = 'Add members and chores to generate plan';
+            } else if (!hasMembers) {
+                btn.textContent = 'Add at least one member';
+            } else if (!hasChores) {
+                btn.textContent = 'Add at least one chore';
+            } else {
+                btn.textContent = 'Generate Plan';
+            }
+        }
+
+        // Sample data function
+        function loadSampleData() {
+            console.log('Loading sample data...');
+            state.members = [
+                {
+                    id: 1,
+                    name: 'Alex',
+                    role: 'Parent',
+                    availability: [true, true, true, true, true, true, true],
+                    capacity: -1,
+                    cantDo: [],
+                    weight: 1.0
+                },
+                {
+                    id: 2,
+                    name: 'Sam',
+                    role: 'Parent',
+                    availability: [true, true, true, true, true, false, true],
+                    capacity: -1,
+                    cantDo: [],
+                    weight: 1.0
+                },
+                {
+                    id: 3,
+                    name: 'Riley',
+                    role: 'Child',
+                    availability: [false, false, false, false, false, true, true],
+                    capacity: 3,
+                    cantDo: [],
+                    weight: 0.5
+                }
+            ];
+            
+            state.chores = [
+                {
+                    id: 1,
+                    name: 'Wash dishes',
+                    frequency: 'daily',
+                    effortPoints: 2,
+                    preferredDays: [],
+                    minAgeRole: '',
+                    critical: true
+                },
+                {
+                    id: 2,
+                    name: 'Take out trash',
+                    frequency: 'weekly',
+                    effortPoints: 1,
+                    preferredDays: [1],
+                    minAgeRole: '',
+                    critical: false
+                }
+            ];
+            
+            renderMembers();
+            renderChores();
+            updateGenerateButton();
+            saveStateToStorage();
+            showToast('Sample data loaded!', 'success');
+        }
+
+        // Storage functions
+        function saveStateToStorage() {
+            try {
+                var data = {
+                    members: state.members,
+                    chores: state.chores,
+                    settings: state.settings,
+                    rotationHistory: state.rotationHistory,
+                    lastSaved: Date.now()
+                };
+                localStorage.setItem('wm_chore_splitter_v1', JSON.stringify(data));
+            } catch (error) {
+                console.warn('Failed to save to localStorage:', error);
+            }
+        }
+
+        function loadStateFromStorage() {
+            try {
+                var saved = localStorage.getItem('wm_chore_splitter_v1');
+                if (saved) {
+                    var data = JSON.parse(saved);
+                    if (data.members) state.members = data.members;
+                    if (data.chores) state.chores = data.chores;
+                    if (data.settings) state.settings = data.settings;
+                    if (data.rotationHistory) state.rotationHistory = data.rotationHistory;
+                }
+            } catch (error) {
+                console.warn('Failed to load from localStorage:', error);
+            }
+        }
+
+        // Toast function
+        function showToast(message, type) {
+            var toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.className = 'toast show ' + (type || 'info');
+                
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Theme toggle
+        function toggleTheme() {
+            var isDark = document.body.classList.toggle('dark');
+            var icon = document.querySelector('.theme-icon');
+            if (icon) {
+                icon.textContent = isDark ? '☀️' : '🌙';
+            }
+            localStorage.setItem('wm_theme', isDark ? 'dark' : 'light');
+        }
+
+        // FAQ toggle
+        function toggleFAQ(button) {
+            var item = button.parentElement;
+            var isExpanded = item.classList.contains('expanded');
+            
+            document.querySelectorAll('.faq-item').forEach(function(faqItem) {
+                faqItem.classList.remove('expanded');
+                faqItem.querySelector('span').textContent = '+';
+            });
+            
+            if (!isExpanded) {
+                item.classList.add('expanded');
+                button.querySelector('span').textContent = '−';
+            }
+        }
+
+        // Plan generation (simplified for now)
+        function generatePlan() {
+            var validMembers = state.members.filter(function(m) { return m.name.trim(); });
+            var validChores = state.chores.filter(function(c) { return c.name.trim(); });
+            
+            if (validMembers.length === 0) {
+                showToast('No members added yet—add at least one to generate a plan.', 'error');
+                return;
+            }
+            
+            if (validChores.length === 0) {
+                showToast('No chores added yet—add at least one to generate a plan.', 'error');
+                return;
+            }
+
+            // Simple plan generation for demo
+            var plan = {
+                days: DAYS.map(function(day, dayIndex) {
+                    return {
+                        day: day,
+                        assignments: validChores.map(function(chore, choreIndex) {
+                            var memberIndex = (dayIndex + choreIndex) % validMembers.length;
+                            return {
+                                chore: chore,
+                                assignee: validMembers[memberIndex],
+                                day: day
+                            };
+                        }),
+                        uncovered: []
+                    };
+                }),
+                memberStats: {}
+            };
+
+            // Calculate member stats
+            validMembers.forEach(function(member) {
+                plan.memberStats[member.id] = {
+                    name: member.name,
+                    taskCount: 0,
+                    effortPoints: 0,
+                    assignments: []
+                };
+            });
+
+            plan.days.forEach(function(day) {
+                day.assignments.forEach(function(assignment) {
+                    var stats = plan.memberStats[assignment.assignee.id];
+                    stats.taskCount++;
+                    stats.effortPoints += assignment.chore.effortPoints || 2;
+                    stats.assignments.push({
+                        chore: assignment.chore.name,
+                        day: assignment.day,
+                        effort: assignment.chore.effortPoints || 2
+                    });
+                });
+            });
+
+            state.plan = plan;
+            renderResults();
+            showResults();
+            saveStateToStorage();
+            showToast('Plan generated successfully!', 'success');
+        }
+
+        function renderResults() {
+            // Show by day view
+            var container = document.getElementById('by-day-results');
+            if (!container) {
+                // Create results section if it doesn't exist
+                var resultsHTML = 
+                    '<section class="card" id="results-section" style="display: block;">' +
+                        '<h2>Your Chore Plan</h2>' +
+                        '<div class="tabs">' +
+                            '<button class="tab active" onclick="showTab(\'by-day\')">By Day</button>' +
+                            '<button class="tab" onclick="showTab(\'by-person\')">By Person</button>' +
+                        '</div>' +
+                        '<div id="by-day-content" class="tab-content active">' +
+                            '<div id="by-day-results"></div>' +
+                        '</div>' +
+                        '<div id="by-person-content" class="tab-content">' +
+                            '<div id="by-person-results"></div>' +
+                        '</div>' +
+                    '</section>';
+                
+                var generateButton = document.getElementById('generate-btn').parentElement;
+                generateButton.insertAdjacentHTML('afterend', resultsHTML);
+                container = document.getElementById('by-day-results');
+            }
+
+            container.innerHTML = '';
+
+            state.plan.days.forEach(function(day, index) {
+                var dayDiv = document.createElement('div');
+                dayDiv.className = 'day-section';
+                if (index === 0) dayDiv.className += ' expanded';
+
+                dayDiv.innerHTML = 
+                    '<div class="day-header" onclick="toggleDaySection(this)" style="cursor: pointer;">' +
+                        '<span>' + day.day + '</span>' +
+                        '<span>' + day.assignments.length + ' tasks</span>' +
+                    '</div>' +
+                    '<div class="day-content">' +
+                        day.assignments.map(function(assignment) {
+                            return '<div class="assignment">' +
+                                '<strong>' + assignment.chore.name + '</strong> - ' + assignment.assignee.name +
+                                '<span style="opacity: 0.7; font-size: 0.9em;"> (' + (assignment.chore.effortPoints || 2) + ' pts)</span>' +
+                            '</div>';
+                        }).join('') +
+                        (day.assignments.length === 0 ? 
+                            '<p style="opacity: 0.7; text-align: center; padding: 2rem;">No chores scheduled for this day</p>' : '') +
+                    '</div>';
+
+                container.appendChild(dayDiv);
+            });
+
+            // Render by person view
+            var personContainer = document.getElementById('by-person-results');
+            if (personContainer) {
+                personContainer.innerHTML = '';
+
+                Object.values(state.plan.memberStats).forEach(function(stats) {
+                    var personDiv = document.createElement('div');
+                    personDiv.className = 'person-summary';
+                    personDiv.innerHTML = 
+                        '<div class="person-name">' + stats.name + '</div>' +
+                        '<div class="person-stats">' +
+                            '<span><strong>Tasks:</strong> ' + stats.taskCount + '</span>' +
+                            '<span><strong>Effort:</strong> ' + stats.effortPoints + ' pts</span>' +
+                        '</div>' +
+                        '<div class="assignments-list">' +
+                            stats.assignments.map(function(assignment) {
+                                return '<div class="assignment">' +
+                                    '<strong>' + assignment.chore + '</strong> - ' + assignment.day +
+                                    '<span style="opacity: 0.7;"> (' + assignment.effort + ' pts)</span>' +
+                                '</div>';
+                            }).join('') +
+                            (stats.assignments.length === 0 ? 
+                                '<p style="opacity: 0.7;">No tasks assigned</p>' : '') +
+                        '</div>';
+
+                    personContainer.appendChild(personDiv);
+                });
+            }
+        }
+
+        function showResults() {
+            var resultsSection = document.getElementById('results-section');
+            if (resultsSection) {
+                resultsSection.style.display = 'block';
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(function(content) {
+                content.classList.remove('active');
+            });
+            var targetContent = document.getElementById(tabName + '-content');
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        }
+
+        function toggleDaySection(header) {
+            var section = header.parentElement;
+            section.classList.toggle('expanded');
+        }
+
+        // Add CSS for day sections
+        var additionalCSS = 
+            '.day-section { margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }' +
+            '.day-header { background: var(--primary); color: var(--on-primary); padding: 1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }' +
+            '.day-content { padding: 1rem; background: var(--surface); display: none; }' +
+            '.day-section.expanded .day-content { display: block; }' +
+            '.assignment { padding: 0.75rem; margin-bottom: 0.5rem; border: 1px solid var(--border); border-radius: 4px; background: var(--background); }' +
+            '.person-summary { background: var(--background); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; }' +
+            '.person-name { font-size: 1.25rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem; }' +
+            '.person-stats { display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.875rem; opacity: 0.8; }' +
+            '.tab-content { display: none; }' +
+            '.tab-content.active { display: block; }';
+
+        var style = document.createElement('style');
+        style.textContent = additionalCSS;
+        document.head.appendChild(style);
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
+            
+            // Load from localStorage
+            loadStateFromStorage();
+            
+            // Initialize theme
+            var savedTheme = localStorage.getItem('wm_theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                var themeIcon = document.querySelector('.theme-icon');
+                if (themeIcon) themeIcon.textContent = '☀️';
+            }
+            
+            // Add initial rows if empty
+            if (state.members.length === 0) {
+                addMemberRow();
+            }
+            if (state.chores.length === 0) {
+                addChoreRow();
+            }
+            
+            // Render existing data
+            renderMembers();
+            renderChores();
+            updateGenerateButton();
+            
+            console.log('App initialized successfully');
+        });
+    </script>
+</body>
+</html>
+            
